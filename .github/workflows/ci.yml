@@ -58,18 +58,12 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-      - name: Set up buf
-        uses: bufbuild/buf-action@37ac33d8960807670a6e9719080e885197b09cc6 # v1.7.0
+      - name: Set up tools from mise.toml
+        uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
         with:
-          setup_only: true
-          version: 1.75.0
           github_token: ${{ github.token }}
-      - name: Check formatting
-        run: buf format --diff --exit-code
-      - name: Lint
-        run: buf lint
-      - name: Build
-        run: buf build
+      - name: Run static checks
+        run: mise run check
       - name: Check for breaking changes
         if: github.event_name == 'pull_request'
         env:
@@ -82,4 +76,4 @@ jobs:
             echo "The base branch has no buf module yet; skipping the breaking change check."
           fi
       - name: Run commit scope tests
-        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'
+        run: mise run test

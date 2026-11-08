@@ -19,7 +19,7 @@ mise run test    # commit scope tests
 mise run format  # buf format -w
 ```
 
-`hk install --mise` enables the git hooks (format on commit, commit header check, checks on push). See [CONTRIBUTING](.github/CONTRIBUTING.md) for the branch flow and commit rules.
+`mise install` also installs the git hooks (through a `postinstall` hook that runs `hk install --mise`): format and lint staged files on commit, check the commit header, and run `mise run check` and `mise run test` on push. All tool versions live in `mise.toml`; CI reads them from there. See [CONTRIBUTING](.github/CONTRIBUTING.md) for the branch flow and commit rules.
 
 ## Using it as a submodule
 

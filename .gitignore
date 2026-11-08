@@ -12,3 +12,4 @@ __pycache__/
 *.binpb.gz
 .env
 .env.*
+.ryl_cache/

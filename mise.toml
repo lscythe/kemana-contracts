@@ -1,7 +1,14 @@
+min_version = "2026.11.3"
+
 [tools]
 buf = "1.75.0"
-hk = "2.9.0"
+hk = "2.11.1"
 python = "3.15.2"
+taplo = "0.10.0"
+"aqua:owenlamont/ryl" = "0.29.0"
+
+[hooks]
+postinstall = "hk install --mise"
 
 [tasks.format]
 description = "Format the protobuf sources"
@@ -9,11 +16,7 @@ run = "buf format -w"
 
 [tasks.check]
 description = "Run the static checks"
-run = [
-  "buf format --diff --exit-code",
-  "buf lint",
-  "buf build",
-]
+run = ["buf format --diff --exit-code", "buf lint", "buf build", "hk check --all"]
 
 [tasks.test]
 description = "Run the commit scope tests"

@@ -1,9 +1,19 @@
-amends "package://github.com/jdx/hk/releases/download/v2.9.0/hk@2.9.0#/Config.pkl"
+amends "package://github.com/jdx/hk/releases/download/v2.11.1/hk@2.11.1#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.11.1/hk@2.11.1#/Builtins.pkl"
 
-local linters = new Mapping<String, Step> {
+local staged_checks = new Mapping<String, Step> {
     ["buf-format"] {
         glob = List("**/*.proto")
         fix = "buf format -w"
+    }
+    ["buf-lint"] = Builtins.buf_lint
+    ["trailing-whitespace"] = Builtins.trailing_whitespace
+    ["newlines"] = Builtins.newlines
+    ["taplo"] = Builtins.taplo
+    ["ryl"] {
+        glob = List("**/*.yml", "**/*.yaml")
+        check = "ryl check {{files}}"
+        fix = "ryl check --fix {{files}}"
     }
 }
 
@@ -11,14 +21,14 @@ hooks {
     ["pre-commit"] {
         fix = true
         stash = "git"
-        steps = linters
+        steps = staged_checks
     }
     ["fix"] {
         fix = true
-        steps = linters
+        steps = staged_checks
     }
     ["check"] {
-        steps = linters
+        steps = staged_checks
     }
     ["commit-msg"] {
         steps = new Mapping<String, Step> {

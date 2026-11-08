@@ -70,7 +70,7 @@ jobs:
       - name: Set up tools from mise.toml
         uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
         with:
-          version: 2026.11.3
+          version: 2026.11.4
           cache_key: mise-v1-{{platform}}-{{version}}-${{ hashFiles('mise.lock') }}
           github_token: ${{ github.token }}
       - name: Run static checks

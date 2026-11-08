@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package kemana.bundle.v1;
+
+message BundleManifest {
+  string version = 1;
+  uint64 size_bytes = 2;
+  string sha256 = 3;
+  string download_path = 4;
+  uint32 schema_version = 5;
+}

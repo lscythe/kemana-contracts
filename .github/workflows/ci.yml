@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - develop
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Changes
+    runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: read
+    outputs:
+      code: ${{ steps.classify.outputs.code }}
+    steps:
+      - name: Classify changed files
+        id: classify
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" != "pull_request" ]]; then
+            echo 'code=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          gh api --paginate "repos/$REPOSITORY/pulls/$PR_NUMBER/files?per_page=100" --jq '.[].filename' > "$RUNNER_TEMP/files"
+          if grep -qvE '(\.md$|^docs/)' "$RUNNER_TEMP/files"; then
+            echo 'code=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'Only documentation changed; skipping the build jobs.'
+            echo 'code=false' >> "$GITHUB_OUTPUT"
+          fi
+
+  buf:
+    name: buf
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Set up buf
+        uses: bufbuild/buf-action@37ac33d8960807670a6e9719080e885197b09cc6 # v1.7.0
+        with:
+          setup_only: true
+          version: 1.75.0
+          github_token: ${{ github.token }}
+      - name: Check formatting
+        run: buf format --diff --exit-code
+      - name: Lint
+        run: buf lint
+      - name: Build
+        run: buf build
+      - name: Check for breaking changes
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          if git cat-file -e "origin/$BASE_REF:buf.yaml" 2>/dev/null; then
+            buf breaking --against ".git#branch=origin/$BASE_REF"
+          else
+            echo "The base branch has no buf module yet; skipping the breaking change check."
+          fi
+      - name: Run commit scope tests
+        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py'

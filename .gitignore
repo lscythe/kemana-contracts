@@ -1,0 +1,14 @@
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+*.swp
+__pycache__/
+*.pyc
+/build/
+/gen/
+*.binpb
+*.binpb.gz
+.env
+.env.*

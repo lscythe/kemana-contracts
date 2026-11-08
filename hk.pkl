@@ -10,7 +10,11 @@ local staged_checks = new Mapping<String, Step> {
     ["trailing-whitespace"] = Builtins.trailing_whitespace
     ["newlines"] = Builtins.newlines
     ["taplo"] = Builtins.taplo
-    ["ryl"] = Builtins.ryl
+    ["ryl"] {
+        glob = List("**/*.yml", "**/*.yaml")
+        check = "ryl check {{files}}"
+        fix = "ryl check --fix {{files}}"
+    }
 }
 
 hooks {

@@ -101,4 +101,3 @@ CREATE TABLE bundle_meta (
 
 CREATE INDEX idx_stops_lat_lon ON stops (lat, lon);
 CREATE INDEX idx_stop_times_stop_departure ON stop_times (stop_id, departure_time);
-CREATE INDEX idx_stop_times_trip_sequence ON stop_times (trip_id, stop_sequence);

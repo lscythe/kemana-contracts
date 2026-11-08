@@ -67,7 +67,7 @@ mise run test
 
 `mise run check` runs `buf format --diff --exit-code`, `buf lint` and `buf build`. `mise run test` runs the commit scope tests. The `pre-push` hook runs both.
 
-On every pull request CI runs the `buf` job: format check, lint, build, `buf breaking` against the base branch, and the commit scope tests. It must pass before a pull request can merge. A pull request that only changes Markdown files or `docs/` skips it; the skipped job still satisfies the required check. **Dependency review** also runs on pull requests.
+On every pull request CI runs the format check, lint, build and commit scope tests, plus `buf breaking` against the base branch. CI must pass before a pull request is merged.
 
 ## Secrets
 

@@ -1,4 +1,4 @@
-min_version = "2026.11.4"
+min_version = "2026.11.3"
 
 [tools]
 buf = "1.75.0"

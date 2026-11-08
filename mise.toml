@@ -16,7 +16,7 @@ run = "buf format -w"
 
 [tasks.check]
 description = "Run the static checks"
-run = ["buf format --diff --exit-code", "buf lint", "buf build"]
+run = ["buf format --diff --exit-code", "buf lint", "buf build", "hk check --all"]
 
 [tasks.test]
 description = "Run the commit scope tests"

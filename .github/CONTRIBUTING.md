@@ -6,7 +6,7 @@ Thank you for contributing. Keep changes focused, tested and easy to review.
 
 1. Search existing issues and pull requests.
 2. For a new contract or a change to an existing one, open an issue first so the shape can be agreed.
-3. Run `mise install` and `hk install --mise` so the git hooks run locally.
+3. Run `mise install`. It installs the tools pinned in `mise.toml` (the single source of tool versions, also used by CI) and the git hooks: `pre-commit` formats and lints staged files, `commit-msg` checks the commit header, and `pre-push` runs `mise run check` and `mise run test`. If the hooks are missing, run `hk install --mise`.
 
 ## Branch flow
 

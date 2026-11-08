@@ -3,7 +3,7 @@ buf = "1.75.0"
 hk = "2.11.1"
 python = "3.15.2"
 taplo = "0.10.0"
-yamlfmt = "0.21.0"
+"aqua:owenlamont/ryl" = "0.29.0"
 
 [hooks]
 postinstall = "hk install --mise"

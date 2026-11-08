@@ -9,8 +9,8 @@ local staged_checks = new Mapping<String, Step> {
     ["buf-lint"] = Builtins.buf_lint
     ["trailing-whitespace"] = Builtins.trailing_whitespace
     ["newlines"] = Builtins.newlines
-    ["taplo"] = Builtins.taplo_format
-    ["yamlfmt"] = Builtins.yamlfmt
+    ["taplo"] = Builtins.taplo
+    ["ryl"] = Builtins.ryl
 }
 
 hooks {

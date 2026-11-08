@@ -6,6 +6,15 @@
 -- Every entity id is TEXT, namespaced `<operator_id>:<source_id>`.
 -- Times are integer seconds since the start of the service day. Values may
 -- exceed 86400 for trips that run past midnight.
+-- Dates are INTEGER YYYYMMDD service dates in the operator's timezone.
+-- A service with NULL start_date and end_date has no weekly pattern and runs
+-- only on dates added by service_exceptions. exception_type 1 adds the
+-- service on that date, 2 removes it.
+--
+-- `PRAGMA user_version` is the bundle schema version. Bump it on every
+-- schema change.
+
+PRAGMA user_version = 2;
 
 CREATE TABLE operators (
     id   TEXT PRIMARY KEY,
@@ -35,10 +44,31 @@ CREATE TABLE routes (
     text_color  TEXT
 );
 
+CREATE TABLE services (
+    id         TEXT PRIMARY KEY,
+    monday     INTEGER NOT NULL DEFAULT 0 CHECK (monday IN (0, 1)),
+    tuesday    INTEGER NOT NULL DEFAULT 0 CHECK (tuesday IN (0, 1)),
+    wednesday  INTEGER NOT NULL DEFAULT 0 CHECK (wednesday IN (0, 1)),
+    thursday   INTEGER NOT NULL DEFAULT 0 CHECK (thursday IN (0, 1)),
+    friday     INTEGER NOT NULL DEFAULT 0 CHECK (friday IN (0, 1)),
+    saturday   INTEGER NOT NULL DEFAULT 0 CHECK (saturday IN (0, 1)),
+    sunday     INTEGER NOT NULL DEFAULT 0 CHECK (sunday IN (0, 1)),
+    start_date INTEGER,
+    end_date   INTEGER,
+    CHECK ((start_date IS NULL) = (end_date IS NULL))
+);
+
+CREATE TABLE service_exceptions (
+    service_id     TEXT NOT NULL REFERENCES services (id),
+    date           INTEGER NOT NULL,
+    exception_type INTEGER NOT NULL CHECK (exception_type IN (1, 2)),
+    PRIMARY KEY (service_id, date)
+) WITHOUT ROWID;
+
 CREATE TABLE trips (
     id           TEXT PRIMARY KEY,
     route_id     TEXT NOT NULL REFERENCES routes (id),
-    service_id   TEXT NOT NULL,
+    service_id   TEXT NOT NULL REFERENCES services (id),
     headsign     TEXT,
     direction_id INTEGER,
     shape_id     TEXT,
@@ -99,5 +129,7 @@ CREATE TABLE bundle_meta (
     built_at       TEXT NOT NULL
 );
 
+CREATE INDEX idx_service_exceptions_date ON service_exceptions (date);
+CREATE INDEX idx_trips_service ON trips (service_id);
 CREATE INDEX idx_stops_lat_lon ON stops (lat, lon);
 CREATE INDEX idx_stop_times_stop_departure ON stop_times (stop_id, departure_time);

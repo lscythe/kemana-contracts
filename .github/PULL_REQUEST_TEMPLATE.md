@@ -16,4 +16,5 @@
 - [ ] Tests are added or updated
 - [ ] `mise run check` and `mise run test` pass
 - [ ] `buf breaking` reports no unintended breaking changes
-- [ ] No secrets or personal data are included
+- [ ] No personal data is included
+- [ ] Naming is operator-neutral, and no secrets or tokens are included
